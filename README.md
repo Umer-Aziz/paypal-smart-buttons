@@ -1,4 +1,4 @@
-#### Custom paypal smart button integration on shopify cart page instead of checkout page
+## Custom paypal smart button integration on shopify Refresh Theme cart page instead of checkout page
 
 ### Step 1 - Go to the theme page click on edit code 
 
