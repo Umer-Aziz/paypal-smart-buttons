@@ -1,0 +1,83 @@
+<style>
+  button[name=checkout]{
+   display:none;
+  }
+  .disabledbutton {
+    pointer-events: none !important;
+    opacity: 0.5; /* You can adjust the opacity to visually indicate the disabled state */
+  }
+
+</style>
+
+<!-- Set up a container element for the button -->
+<div id="paypal-button-container"></div>
+<!-- Include the PayPal JavaScript SDK -->
+
+  <!-- Test Client ID  -->
+  
+ <!-- <script src="https://www.paypal.com/sdk/js?client-id=ATUn-cYhbd-Xj7rJh6T0tPhQ5jAqj8E-TQIARkC0Zdol9FNxINKDBED0sH-D7Ap57UtWnpJliOrcjHbg&currency=USD&components=buttons,hosted-fields&enable-funding=card&disable-funding=paylater" data-sdk-integration-source="integrationbuilder_sc"></script>  -->
+  
+
+  <!-- Real Client ID   -->
+ <script src="https://www.paypal.com/sdk/js?client-id=AX5a3huFbqsZPT2mO0JYBpV5BL_Tg5MS1vQW8Dc_zUS_z8Q8ZA7PYbBrmlgjvwqgC-WpdqtHAC_nuUb2&currency=USD&components=buttons,hosted-fields&enable-funding=card&disable-funding=paylater,venmo" data-sdk-integration-source="integrationbuilder_sc"></script>
+ 
+  <script>
+
+  // JavaScript code to disable the div
+  document.getElementById("paypal-button-container").classList.add("disabledbutton");
+   
+    
+  // Fetching cart total price & its currency
+  // Extract numeric value with no symbol
+  const totalPrice = `{{ cart.total_price | money_with_currency }}`.replace("$", "").split(" ")[0]; 
+   // console.log("total price ", totalPrice);
+    
+
+
+  const currency = `{{ shop.currency }}`;
+    // console.log("currency ", currency);
+
+    
+    
+  // Render the PayPal button into #paypal-button-container
+  paypal.Buttons({
+    style: {
+      color: 'gold',
+      shape: 'rect',
+      label: 'pay',
+      height: 40
+    },
+    
+    // Call your server to set up the transaction
+    createOrder: function(data, actions) {
+      // Replace with your client-side order creation logic
+      // This could involve making an AJAX request to Shopify, but not a direct server request.
+      // Shopify handles server-side processing.
+      return actions.order.create({
+        purchase_units: [{
+          amount: {
+            // Ensure numeric value  // Use the extracted total price
+            value: totalPrice,
+            currency: currency  // Use the extracted currency
+          }
+        }]
+      });
+    },
+
+    // Call your server to finalize the transaction
+    onApprove: function(data, actions) {
+      // Replace with your client-side order capture logic
+      return actions.order.capture().then(function(details) {
+        // Replace this with the logic to handle a successful transaction
+        alert('Transaction completed by ' + details.payer.name.given_name);
+
+        // redirect url after payment successful 
+         actions.redirect('https://1d879e-3.myshopify.com/pages/thank-you');
+          
+      });
+    },
+
+    // Enable all card types for Guest Checkout
+    commit: true
+  }).render('#paypal-button-container');
+</script>
