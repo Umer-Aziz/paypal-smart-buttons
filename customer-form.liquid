@@ -1,0 +1,114 @@
+<script src="https://cdn.tailwindcss.com"></script>
+
+  <div class="bg-white p-8 page-width">
+    <h2 class="text-3xl font-semibold mb-6">Billing address</h2>
+    
+    <form method="POST" accept-charset="UTF-8" id="billingform">
+
+      <!-- First Name and Last Name (1st row) -->
+      <div class="flex mb-6">
+        <div class="w-1/2 pr-2">
+          <label for="firstName" class="block text-gray-800 text-lg font-bold mb-2">First Name</label>
+          <input required type="text" id="firstName" name="firstName" class="w-full px-4 py-2 lg:py-3 border rounded-md focus:outline-none focus:border-blue-500">
+        </div>
+        <div class="w-1/2 pl-2">
+          <label for="lastName" class="block text-gray-800 text-lg font-bold mb-2">Last Name</label>
+          <input required type="text" id="lastName" name="lastName" class="w-full px-4 py-2 lg:py-3 border rounded-md focus:outline-none focus:border-blue-500">
+        </div>
+      </div>
+
+      <!-- Email (2nd row) -->
+      <div class="flex mb-6">
+        <div class="w-1/2 pr-2">
+        <label for="email" class="block text-gray-800 text-lg font-bold mb-2">Email</label>
+        <input required type="email" id="email" name="email" class="w-full px-4 py-2 lg:py-3 border rounded-md focus:outline-none focus:border-blue-500">
+      </div>
+        <!-- Phone (additional row) -->
+      <div class="w-1/2 pl-2">
+      <label for="phone" class="block text-gray-800 text-lg font-bold mb-2">Phone</label>
+      <input required type="text" id="phone" name="phone" title="Only numeric values are allowed" class="w-full px-4 py-2 lg:py-3 border rounded-md focus:outline-none focus:border-blue-500">
+      </div>
+
+      </div>
+
+      <!-- Address (3rd row) -->
+      <div class="mb-6">
+        <label for="address" class="block text-gray-800 text-lg font-bold mb-2">Address</label>
+        <input required id="address" name="address" rows="3" class="w-full px-4 py-2 lg:py-3 border rounded-md focus:outline-none focus:border-blue-500"/>
+      </div>
+
+      <!-- Country and City (4th row) -->
+      <div class="flex mb-6">
+        <div class="w-1/2 pr-2">
+          <label for="country" class="block text-gray-800 text-lg font-bold mb-2">Country</label>
+          <input required type="text" id="country" name="country" class="w-full px-4 py-2 lg:py-3 border rounded-md focus:outline-none focus:border-blue-500">
+        </div>
+        <div class="w-1/2 pl-2">
+          <label for="city" class="block text-gray-800 text-lg font-bold mb-2">City</label>
+          <input required type="text" id="city" name="city" class="w-full px-4 py-2 lg:py-3 border rounded-md focus:outline-none focus:border-blue-500">
+        </div>
+      </div>
+
+      <!-- State and Zip Code (last row) -->
+      <div class="flex">
+        <div class="w-1/2 pr-2">
+          <label for="state" class="block text-gray-800 text-lg font-bold mb-2">State</label>
+          <input required type="text" id="state" name="state" class="w-full px-4 py-2 lg:py-3 border rounded-md focus:outline-none focus:border-blue-500">
+        </div>
+        <div class="w-1/2 pl-2">
+          <label for="zipCode" class="block text-gray-800 text-lg font-bold mb-2">Zip Code</label>
+          <input required type="text" id="zipCode" name="zipCode" class="w-full px-4 py-2 lg:py-3 border rounded-md focus:outline-none focus:border-blue-500">
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="text-right mt-8">
+        <button type="submit" class="bg-black text-white px-8 py-3 lg:py-4 rounded-md hover:bg-gray-900 focus:outline-none">Click here to Pay Now</button>
+      </div>
+
+    </form>
+  </div>
+
+<script>
+    const form = document.getElementById("billingform");
+    form.addEventListener("submit", formSubmit);
+
+    function formSubmit(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+
+       // add your api or getform.io url 
+      
+        fetch("https://getform.io/f/", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "Accept": "application/json",
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                // Form submission successful
+                
+                // JavaScript code to disable the div
+                document.getElementById("paypal-button-container").classList.remove("disabledbutton");
+                
+               // JavaScript code to scroll the page smoothly by 200 pixels
+              window.scrollTo({
+              top: window.scrollY + 400,
+             behavior: "smooth"
+            });
+              
+            } else {
+                // Form submission failed
+              alert("Form submission failed");
+                console.log("Form submission failed");
+            }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+</script>
+
+  
