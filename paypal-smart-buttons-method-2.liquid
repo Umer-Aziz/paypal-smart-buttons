@@ -1,0 +1,113 @@
+(* Method 2 *)
+<style>
+
+  .disabled-button {
+    pointer-events: none !important;
+    cursor: not-allowed;
+    opacity: 0.5; /* You can adjust the opacity to visually indicate the disabled state */
+  }
+</style>
+<!-- ATUn-cYhbd-Xj7rJh6T0tPhQ5jAqj8E-TQIARkC0Zdol9FNxINKDBED0sH-D7Ap57UtWnpJlisfgs3sf Demo ID -->
+
+{% assign paypal_live_client_id = "paste your Client id here" %}
+{% assign store_currency = shop.currency %}
+
+<div id="paypal-button-container"></div>
+
+<script src="https://www.paypal.com/sdk/js?client-id={{ paypal_live_client_id }}&currency={{ store_currency }}&components=buttons,hosted-fields&enable-funding=card&disable-funding=paylater,venmo" data-sdk-integration-source="integrationbuilder_sc"></script>
+
+<script>
+  
+ const currency = `{{ shop.currency }}`;
+    
+// console.log("currency ", currency);
+
+  document.addEventListener('DOMContentLoaded', function () {
+     // Select the button when the DOM is fully loaded
+  const checkoutButton = document.querySelector('button[name=checkout]');
+  // Check if the button is found before attempting to add the class
+  if (checkoutButton) {
+    checkoutButton.classList.add('disabled-button');
+  }
+});
+
+    function init_paypal_button(items) {
+        const container = document.querySelector("#paypal-button-container");
+        container.innerHTML = "";
+        let cantidad = 1;
+        paypal.Buttons({
+            style: {
+                shape: 'pill',
+                color: '',
+                layout: 'vertical',
+                label: 'pay',
+               height: 48
+            },
+            createOrder: function(data, actions) {
+              
+                let total_price = 0;
+                const items_json_format = [];
+                for (const item of items) {
+                    let {title, product_description, sku, discounted_price, quantity, } = item;
+                    discounted_price /= 100;
+                    items_json_format.push({
+                        name: title,
+                        description: "sss",
+                        sku: sku,
+                        unit_amount: {
+                            currency_code: currency,
+                            value: discounted_price
+                        },
+                        quantity: quantity,
+                    });
+                    total_price += discounted_price * quantity
+                }
+                total_price = total_price.toFixed(2);
+                return actions.order.create({
+                    purchase_units: [
+                      {
+                        description: `Digitaltheme create Order`,
+                        amount: {
+                            currency_code: currency,
+                            value: total_price,
+                            breakdown: {
+                                item_total: {
+                                    currency_code: currency,
+                                    value: total_price
+                                }
+                            }
+                        },
+                        items: items_json_format,
+                      }
+                    ]
+                });
+            },
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {  
+                  
+                  alert("Payment successful")
+                    // Select the button
+           const checkoutButton = document.querySelector('button[name=checkout]');
+                // Enable checkout button after payment successful
+                  if (checkoutButton) {
+                checkoutButton.classList.remove('disabled-button');
+               }
+                    // JavaScript code to scroll the page smoothly by 200 pixels
+                   window.scrollTo({
+                   top: window.scrollY +200,
+                   behavior: "smooth"
+            });
+            
+                });
+            },
+            onError: function(err) {
+                console.log(err);
+                alert("An error occurred while processing the payment :(, try again.")
+            },
+          // Enable all card types for Guest Checkout
+          commit: true
+        }).render('#paypal-button-container');
+    }
+    const items = {{ cart.items | json }};
+    init_paypal_button(items);
+</script>
